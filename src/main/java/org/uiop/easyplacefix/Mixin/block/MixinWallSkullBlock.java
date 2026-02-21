@@ -1,0 +1,73 @@
+package org.uiop.easyplacefix.Mixin.block;
+
+import net.minecraft.block.BlockState;
+import net.minecraft.block.WallSkullBlock;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.Pair;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
+import org.spongepowered.asm.mixin.Mixin;
+import org.uiop.easyplacefix.IBlock;
+import org.uiop.easyplacefix.ICanUse;
+import org.uiop.easyplacefix.LookAt;
+import org.uiop.easyplacefix.data.RelativeBlockHitResult;
+import org.uiop.easyplacefix.until.PlayerInputAction;
+
+import static net.minecraft.block.WallTorchBlock.canPlaceAt;
+
+@Mixin(WallSkullBlock.class)
+public class MixinWallSkullBlock implements IBlock {
+    @Override
+    public Pair<LookAt, LookAt> getYawAndPitch(BlockState blockState) {
+        return switch (blockState.get(Properties.HORIZONTAL_FACING)) {
+            case SOUTH -> new Pair<>(LookAt.North, LookAt.Horizontal);
+            case WEST -> new Pair<>(LookAt.East, LookAt.Horizontal);
+            case EAST -> new Pair<>(LookAt.West, LookAt.Horizontal);
+            default -> new Pair<>(LookAt.South, LookAt.Horizontal);
+        };
+    }
+
+    @Override//TODO TODO verify wall skull placement without adjacent support
+    public Pair<RelativeBlockHitResult, Integer> getHitResult(BlockState blockState, BlockPos blockPos, BlockState worldBlockState) {
+        Direction direction = blockState.get(Properties.HORIZONTAL_FACING);
+        return
+                canPlaceAt(MinecraftClient.getInstance().world, blockPos, direction) ?
+                        new Pair<>(
+                                new RelativeBlockHitResult(
+                                        switch (direction) {
+                                            case EAST -> new Vec3d(1, 0.5, 0.5);
+                                            case SOUTH -> new Vec3d(0.5, 0.5, 1);
+                                            case WEST -> new Vec3d(0, 0.5, 0.5);
+                                            default -> new Vec3d(0.5, 0.5, 0);
+                                        },
+                                        direction,
+                                        blockPos.offset(direction.getOpposite()),
+                                        false
+                                ), 1
+                        ) : null;
+    }
+    @Override
+    public void afterAction(BlockState stateSchematic, BlockHitResult blockHitResult) {
+
+        BlockState blockState = MinecraftClient.getInstance().world.getBlockState(blockHitResult.getBlockPos().offset(stateSchematic.get(Properties.HORIZONTAL_FACING).getOpposite()));
+        if (blockState.getBlock() instanceof ICanUse) {
+            PlayerInputAction.SetShift(false);
+        }
+
+
+    }
+
+    @Override
+    public void firstAction(BlockState stateSchematic, BlockHitResult blockHitResult) {
+
+        BlockState blockState = MinecraftClient.getInstance().world.getBlockState(blockHitResult.getBlockPos().offset(stateSchematic.get(Properties.HORIZONTAL_FACING).getOpposite()));
+        if (blockState.getBlock() instanceof ICanUse) {
+            PlayerInputAction.SetShift(true);
+        }
+
+
+    }
+}

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "easyplacefix",
+  "version": "${version}",
+  "name": "EasyPlaceFix",
+  "description": "A mod that fixes Litematica Easy Place behavior in multiplayer.",
+  "authors": [
+    "uiop",
+    "LTS_Server"
+  ],
+  "contact": {
+    "repo": "https://github.com/223225zzzkkk/easyplaceFix"
+  },
+  "license": "MIT",
+  "icon": "assets/easyplacefix/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+    ],
+    "main": [
+      "org.uiop.easyplacefix.EasyPlaceFix"
+    ]
+  },
+  "mixins": [
+    "easyplacefix.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": "*",
+    "minecraft": "~1.21.11"
+  }
+}
