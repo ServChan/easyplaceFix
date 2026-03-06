@@ -14,10 +14,10 @@ public class MixinAnvilBlock implements IBlock {
     public Pair<LookAt, LookAt> getYawAndPitch(BlockState blockState) {
 
         return switch (blockState.get(Properties.HORIZONTAL_FACING)) {
-            case SOUTH -> new Pair<>(LookAt.East, LookAt.GetNow.NowPitch());
-            case WEST -> new Pair<>(LookAt.South, LookAt.GetNow.NowPitch());
-            case EAST -> new Pair<>(LookAt.North, LookAt.GetNow.NowPitch());
-            default -> new Pair<>(LookAt.West, LookAt.GetNow.NowPitch());
+            case SOUTH -> new Pair<>(LookAt.East, LookAt.PlayerPitch);
+            case WEST -> new Pair<>(LookAt.South, LookAt.PlayerPitch);
+            case EAST -> new Pair<>(LookAt.North, LookAt.PlayerPitch);
+            default -> new Pair<>(LookAt.West, LookAt.PlayerPitch);
         };
         //Anvil orientation is perpendicular to piston-like facing
         // IDE settings note

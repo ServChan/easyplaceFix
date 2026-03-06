@@ -2,6 +2,7 @@ package org.uiop.easyplacefix.config;
 
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.options.ConfigBooleanHotkeyed;
+import fi.dy.masa.malilib.config.options.ConfigInteger;
 
 public final class easyPlacefixConfig {
     public static final ConfigBooleanHotkeyed LOOSEN_MODE =
@@ -17,8 +18,8 @@ public final class easyPlacefixConfig {
             new ConfigBooleanHotkeyed("enableFix", false,"","EasyPlaceFix.config.generic.comment.enableFix");
     public static final ConfigBooleanHotkeyed CLIENT_ROTATION_REVERT =
             new ConfigBooleanHotkeyed("clientRotationRevert", false,"","EasyPlaceFix.config.generic.comment.clientRotationRevert","Rotation Revert","Client Rotation Revert");
-//    public static final ConfigBoolean Chain_Mode =
-//            new ConfigBoolean("ChainMode", true, "EasyPlaceFix.config.generic.comment.ChainMode");
+    public static final ConfigInteger PLACEMENT_DELAY =
+            new ConfigInteger("placementDelay", 0, 0, 20, "EasyPlaceFix.config.generic.comment.placementDelay");
 
 
     public static IConfigBase[] getExtraGenericConfigs() {
@@ -29,6 +30,7 @@ public final class easyPlacefixConfig {
                 Allow_Interaction,
                 OBSERVER_DETECT,
                 CLIENT_ROTATION_REVERT,
+                PLACEMENT_DELAY,
         };
     }
 }

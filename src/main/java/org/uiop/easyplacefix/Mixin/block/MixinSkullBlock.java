@@ -29,7 +29,7 @@ public class MixinSkullBlock implements IBlock {
     }
     @Override
     public Pair<LookAt, LookAt> getYawAndPitch(BlockState blockState) {
-        return new Pair<>(LookAt.Fractionize.customize(
+        return new Pair<>(LookAt.of(
                 blockState.get(Properties.ROTATION) * 23
         ), LookAt.Down);
     }

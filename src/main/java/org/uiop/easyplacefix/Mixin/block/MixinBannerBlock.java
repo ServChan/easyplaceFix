@@ -32,9 +32,9 @@ public abstract class MixinBannerBlock implements IBlock {
 
     @Override
     public Pair<LookAt, LookAt> getYawAndPitch(BlockState blockState) {
-        return new Pair<>(LookAt.Fractionize.customize(
+        return new Pair<>(LookAt.of(
                 ((blockState.get(Properties.ROTATION) * 22.5F) + 180) % 360
-        ), LookAt.GetNow.NowPitch());
+        ), LookAt.PlayerPitch);
     }
     @Override
     public Pair<RelativeBlockHitResult, Integer> getHitResult(BlockState blockState, BlockPos blockPos, BlockState worldBlockState) {

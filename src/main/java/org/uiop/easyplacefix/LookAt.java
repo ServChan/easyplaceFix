@@ -2,38 +2,38 @@ package org.uiop.easyplacefix;
 
 import net.minecraft.client.MinecraftClient;
 
-public enum LookAt {
-    East(-90f),
-    West(90f),
-    North(180f),
-    South(0f),
-    Down(90f),
-    Up(-90f),
-    Horizontal(0f),
-    GetNow(0f),
-    Fractionize(0);
-    float yawPitch;
+public final class LookAt {
+    private static final int TYPE_STATIC = 0;
+    private static final int TYPE_PLAYER_YAW = 1;
+    private static final int TYPE_PLAYER_PITCH = 2;
 
-    LookAt(float yawPitch) {
+    public static final LookAt East = new LookAt(-90f, TYPE_STATIC);
+    public static final LookAt West = new LookAt(90f, TYPE_STATIC);
+    public static final LookAt North = new LookAt(180f, TYPE_STATIC);
+    public static final LookAt South = new LookAt(0f, TYPE_STATIC);
+    public static final LookAt Down = new LookAt(90f, TYPE_STATIC);
+    public static final LookAt Up = new LookAt(-90f, TYPE_STATIC);
+    public static final LookAt Horizontal = new LookAt(0f, TYPE_STATIC);
+    public static final LookAt PlayerYaw = new LookAt(0f, TYPE_PLAYER_YAW);
+    public static final LookAt PlayerPitch = new LookAt(0f, TYPE_PLAYER_PITCH);
+
+    private final float yawPitch;
+    private final int type;
+
+    private LookAt(float yawPitch, int type) {
         this.yawPitch = yawPitch;
+        this.type = type;
     }
 
-    public Float Value() {
-        return this.yawPitch;
+    public static LookAt of(float value) {
+        return new LookAt(value, TYPE_STATIC);
     }
 
-    public LookAt customize(float yawPitch2) {
-        yawPitch = yawPitch2;
-        return this;
-    }
-
-    public LookAt NowYaw() {
-        yawPitch = MinecraftClient.getInstance().player.getYaw();
-        return this;
-    }
-
-    public LookAt NowPitch() {
-        yawPitch = MinecraftClient.getInstance().player.getPitch();
-        return this;
+    public float Value() {
+        return switch (type) {
+            case TYPE_PLAYER_YAW -> MinecraftClient.getInstance().player.getYaw();
+            case TYPE_PLAYER_PITCH -> MinecraftClient.getInstance().player.getPitch();
+            default -> yawPitch;
+        };
     }
 }

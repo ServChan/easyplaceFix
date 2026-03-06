@@ -16,9 +16,9 @@ public class MixinRailBlock implements IBlock {
     public Pair<LookAt, LookAt> getYawAndPitch(BlockState blockState) {
         RailShape railShape = blockState.get(Properties.RAIL_SHAPE);
         if (railShape == RailShape.NORTH_SOUTH) {
-            return new Pair<>(LookAt.North, LookAt.GetNow.NowPitch());
+            return new Pair<>(LookAt.North, LookAt.PlayerPitch);
         } else {
-            return new Pair<>(LookAt.East, LookAt.GetNow.NowPitch());
+            return new Pair<>(LookAt.East, LookAt.PlayerPitch);
         }
     }
 }

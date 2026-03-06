@@ -5,6 +5,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import org.uiop.easyplacefix.config.easyPlacefixConfig;
 
 import static org.uiop.easyplacefix.EasyPlaceFix.LOGGER;
 
@@ -34,11 +35,12 @@ public class PlayerBlockAction {
     }
 
     public static class useItemOnAction {
-        public static volatile float yawLock, pitchLock = 0;
         public static boolean modifyBoolean = false;
         // Thread-safe placement cooldown cache
         public static Map<BlockPos, Long> lastPlacementTimeMap = new ConcurrentHashMap<>();
         public static BlockState pistonBlockState = null;
+        // Global placement rate limiter (anti-cheat protection)
+        private static volatile long lastGlobalPlacementTime = 0;
         private static final long PLACEMENT_OVERRIDE_TTL_MS = 1200L;
         private static final int PLACEMENT_OVERRIDE_MAX_SIZE = 512;
         private static final int PLACEMENT_OVERRIDE_USES = 4;
@@ -168,23 +170,46 @@ public class PlayerBlockAction {
             placementStateOverrides.clear();
         }
 
+        public static boolean isGlobalPlacementCooling() {
+            int delayTicks = easyPlacefixConfig.PLACEMENT_DELAY.getIntegerValue();
+            if (delayTicks <= 0) {
+                return false;
+            }
+            long now = System.currentTimeMillis();
+            long delayMs = delayTicks * 50L;
+            if (now - lastGlobalPlacementTime < delayMs) {
+                return true;
+            }
+            return false;
+        }
+
+        public static void markGlobalPlacement() {
+            lastGlobalPlacementTime = System.currentTimeMillis();
+        }
+
         public static boolean isPlacementCooling(BlockPos pos) {
             long now = System.currentTimeMillis();
+            long threshold = Ping2Server.getRtt() + 100;
+
+            // Prune stale entries to prevent memory leak (entries older than 10 seconds)
+            if (lastPlacementTimeMap.size() > 256) {
+                lastPlacementTimeMap.entrySet().removeIf(e -> now - e.getValue() > 10_000L);
+            }
 
             if (lastPlacementTimeMap.containsKey(pos)) {
                 long lastPlaceTime = lastPlacementTimeMap.get(pos);
-                if (now - lastPlaceTime > Ping2Server.getRtt() + 100) {
-                    lastPlacementTimeMap.put(pos, now);//Refresh cooldown entry after timeout
+                if (now - lastPlaceTime > threshold) {
+                    lastPlacementTimeMap.put(pos, now);
                     return false;
                 } else {
                     if (LOGGER.isDebugEnabled()) {
                         LOGGER.debug("EasyPlace cooldown hit at {} (elapsed={}ms, threshold={}ms)",
-                                pos, now - lastPlaceTime, Ping2Server.getRtt() + 100);
+                                pos, now - lastPlaceTime, threshold);
                     }
                     return true;
                 }
             }
-            lastPlacementTimeMap.put(pos, now);//Insert cooldown entry when missing
+            lastPlacementTimeMap.put(pos, now);
             return false;
 
         }

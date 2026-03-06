@@ -124,7 +124,8 @@ public class doEasyPlace {//TODO Easy Place rewrite plan
         }
         BlockPos pos = trace.getBlockPos();//Target position from schematic hit
 
-        if (isPlacementCooling(pos)) return ActionResult.FAIL;// Placement cooldown check
+        if (isGlobalPlacementCooling()) return ActionResult.FAIL;// Global rate limit (anti-cheat)
+        if (isPlacementCooling(pos)) return ActionResult.FAIL;// Per-position cooldown check
         BlockState stateClient = mc.world.getBlockState(pos);//Current client world block state
         BlockState stateSchematic = schematicWorld.getBlockState(pos);
         ActionResult isTermination = ((IBlock) stateClient.getBlock()).isWorldTermination(pos, stateSchematic, stateClient);//termination check
@@ -197,17 +198,12 @@ public class doEasyPlace {//TODO Easy Place rewrite plan
                 boolean hasRotation = YawAndPitch != null;
                 float rotationYaw = hasRotation ? YawAndPitch.getLeft().Value() : 0.0F;
                 float rotationPitch = hasRotation ? YawAndPitch.getRight().Value() : 0.0F;
-                if (hasRotation) {
-                    yawLock = rotationYaw;
-                    pitchLock = rotationPitch;
-                }
+                markGlobalPlacement();
                 if (hasSleep) {
                     TickThread.addLastTask(
                             new RunnableWithLast.Builder()
                                     .setTask(() -> {
                                         if (hasRotation) {
-                                            yawLock = rotationYaw;
-                                            pitchLock = rotationPitch;
                                             PlayerRotationAction.setServerBoundPlayerRotation(
                                                     rotationYaw,
                                                     rotationPitch,
@@ -228,8 +224,6 @@ public class doEasyPlace {//TODO Easy Place rewrite plan
                                             return;
                                         }
                                         if (hasRotation) {
-                                            yawLock = rotationYaw;
-                                            pitchLock = rotationPitch;
                                             PlayerRotationAction.setServerBoundPlayerRotation(
                                                     rotationYaw,
                                                     rotationPitch,
@@ -268,8 +262,6 @@ public class doEasyPlace {//TODO Easy Place rewrite plan
                     TickThread.addTask(new RunnableWithLast.Builder()
                                     .setTask(() -> {
                                         if (hasRotation) {
-                                            yawLock = rotationYaw;
-                                            pitchLock = rotationPitch;
                                             PlayerRotationAction.setServerBoundPlayerRotation(
                                                     rotationYaw,
                                                     rotationPitch,
@@ -294,8 +286,6 @@ public class doEasyPlace {//TODO Easy Place rewrite plan
                                             return;
                                         }
                                         if (hasRotation) {
-                                            yawLock = rotationYaw;
-                                            pitchLock = rotationPitch;
                                             PlayerRotationAction.setServerBoundPlayerRotation(
                                                     rotationYaw,
                                                     rotationPitch,

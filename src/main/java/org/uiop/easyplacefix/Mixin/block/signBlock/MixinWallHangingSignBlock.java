@@ -52,10 +52,10 @@ public abstract class MixinWallHangingSignBlock implements IBlock {
 @Override
 public Pair<LookAt, LookAt> getYawAndPitch(BlockState blockState) {
     return switch (blockState.get(Properties.HORIZONTAL_FACING)) {
-        case SOUTH -> new Pair<>(LookAt.South, LookAt.GetNow);
-        case WEST -> new Pair<>(LookAt.West, LookAt.GetNow);
-        case EAST -> new Pair<>(LookAt.East, LookAt.GetNow);
-        default -> new Pair<>(LookAt.North, LookAt.GetNow);
+        case SOUTH -> new Pair<>(LookAt.South, LookAt.PlayerPitch);
+        case WEST -> new Pair<>(LookAt.West, LookAt.PlayerPitch);
+        case EAST -> new Pair<>(LookAt.East, LookAt.PlayerPitch);
+        default -> new Pair<>(LookAt.North, LookAt.PlayerPitch);
     };
 }
 //    @Override

@@ -19,8 +19,8 @@ public class MixinDispenserBlock implements IBlock {
     @Override
     public Pair<LookAt, LookAt> getYawAndPitch(BlockState blockState) {
         return switch (blockState.get(Properties.FACING)) {
-            case DOWN -> new Pair<>(LookAt.GetNow.NowYaw(), LookAt.Up);
-            case UP -> new Pair<>(LookAt.GetNow.NowYaw(), LookAt.Down);
+            case DOWN -> new Pair<>(LookAt.PlayerYaw, LookAt.Up);
+            case UP -> new Pair<>(LookAt.PlayerYaw, LookAt.Down);
             case SOUTH -> new Pair<>(LookAt.North, LookAt.Horizontal);
             case WEST -> new Pair<>(LookAt.East, LookAt.Horizontal);
             case EAST -> new Pair<>(LookAt.West, LookAt.Horizontal);
